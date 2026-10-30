@@ -37,5 +37,43 @@ void main() {
   stdout.write('Pesanan (contoh: P01x2, P03x1): ');
   final String input = stdin.readLineSync() ?? '';
 
-  print(input); // sementara, akan diganti di tahap 2
+  // TODO 2 & 3: urai input dan validasi
+  final List<({String nama, String kategori, int harga, int jumlah})> pesanan =
+      [];
+  final List<String> ditolak = [];
+
+  for (final bagian in input.split(',')) {
+    final item = bagian.trim();
+    if (item.isEmpty) continue; // lewati bagian kosong, misal "P01x2,,P03x1"
+
+    final pecah = item.toLowerCase().split('x');
+    if (pecah.length != 2) {
+      ditolak.add('$item (format salah)');
+      continue;
+    }
+
+    final kode = pecah[0].trim().toUpperCase();
+    final jumlah = int.tryParse(pecah[1].trim()); // int? (bisa null)
+    final produk = katalog[kode]; // record? (bisa null)
+
+    if (produk == null) {
+      ditolak.add('$item (kode produk tidak ada)');
+      continue;
+    }
+    if (jumlah == null || jumlah <= 0) {
+      ditolak.add('$item (jumlah tidak valid)');
+      continue;
+    }
+
+    // Setelah dua pengecekan di atas, compiler tahu produk dan jumlah
+    // tidak null, jadi operator ! tidak diperlukan.
+    pesanan.add((
+      nama: produk.nama,
+      kategori: produk.kategori,
+      harga: produk.harga,
+      jumlah: jumlah,
+    ));
+  }
+
+  print('Valid: ${pesanan.length}, ditolak: $ditolak'); // sementara
 }
