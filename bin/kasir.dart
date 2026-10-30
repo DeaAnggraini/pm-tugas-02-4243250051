@@ -75,5 +75,39 @@ void main() {
     ));
   }
 
-  print('Valid: ${pesanan.length}, ditolak: $ditolak'); // sementara
+  if (pesanan.isEmpty) {
+    print('\nTidak ada pesanan yang valid.');
+    if (ditolak.isNotEmpty) print('Item ditolak: ${ditolak.join(', ')}');
+    return;
+  }
+
+  // TODO 4: subtotal pakai map, total pakai fold, diskon 10% jika total >= 100000
+  final List<int> subtotal = pesanan.map((p) => p.harga * p.jumlah).toList();
+  final int total = subtotal.fold<int>(0, (sum, n) => sum + n);
+  final int diskon = total >= 100000 ? total ~/ 10 : 0;
+  final int bayar = total - diskon;
+
+  // TODO 5: cetak struk, Set kategori, dan item yang ditolak
+  print('\n${'STRUK BELANJA'.padLeft(28)}');
+  print('=' * 56);
+  for (var i = 0; i < pesanan.length; i++) {
+    final p = pesanan[i];
+    final nama = p.nama.padRight(22);
+    final qty = p.jumlah.toString().padLeft(3);
+    final harga = rupiah(p.harga).padLeft(10);
+    final sub = rupiah(subtotal[i]).padLeft(11);
+    print('$nama$qty x $harga = $sub');
+  }
+  print('-' * 56);
+  print('${'Total'.padRight(40)}${rupiah(total).padLeft(16)}');
+  print('${'Diskon 10%'.padRight(40)}${rupiah(diskon).padLeft(16)}');
+  print('${'Jumlah bayar'.padRight(40)}${rupiah(bayar).padLeft(16)}');
+  print('=' * 56);
+
+  final Set<String> kategori = pesanan.map((p) => p.kategori).toSet();
+  print('Kategori dibeli : ${kategori.join(', ')}');
+
+  if (ditolak.isNotEmpty) {
+    print('Item ditolak    : ${ditolak.join(', ')}');
+  }
 }
